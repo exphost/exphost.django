@@ -6,7 +6,12 @@ After=syslog.target
 [Service]
 User={{app.value.django.user.user}}
 WorkingDirectory={{app.value.django.user.home}}/django/code
-ExecStart={{app.value.django.user.home}}/django/venv/bin/uwsgi --ini {{app.value.django.user.home}}/django/code/uwsgi.ini  --socket {{run_dir}}/{{app.key}}.sock --stats={{run_dir}}/{{app.key}}_stats.sock --pidfile={{run_dir}}/{{app.key}}.pid
+ExecStart={{app.value.django.user.home}}/django/venv/bin/uwsgi --ini {{app.value.django.user.home}}/django/code/uwsgi.ini --pidfile={{run_dir}}/{{app.key}}.pid
+{%- if app.value.django.configs.server.socket.type == "unix" %}
+ --socket {{run_dir}}/{{app.key}}.sock --stats={{run_dir}}/{{app.key}}_stats.sock
+{% elif app.value.django.configs.server.socket.type == "tcp" %}
+ --socket :{{app.value.django.configs.server.socket.ports.main}} --stats :{{app.value.django.configs.server.socket.ports.stats}}
+{% endif %}
 RuntimeDirectory={{app.value.django.user.user}}
 Restart=always
 KillSignal=SIGQUIT
