@@ -1,0 +1,32 @@
+- debug:
+    msg: "Jeste Djange"
+- block:
+    - name: install python3
+      yum:
+        name:
+          - python36
+          - python36-devel
+          - python36-virtualenv
+  become: True
+- block:
+  - name: install  requirements
+    pip:
+      virtualenv: "{{app.value.django.user.home}}/django/venv"
+      virtualenv_command: /usr/bin/python3 -m venv
+      requirements: "{{app.value.django.user.home}}/django/code/requirements.txt"
+    vars:
+      ansible_python_interpreter: /usr/bin/python3
+    notify:
+      - restart {{app.value.django.configs.server.type}}
+
+  - name: django db migrate
+    community.general.django_manage:
+      command: migrate
+      app_path: "{{app.value.django.user.home}}/django/code"
+      virtualenv: "{{app.value.django.user.home}}/django/venv"
+
+  become: True
+  become_user: "{{app.value.django.user.user}}"
+
+- include_tasks: "server_{{app.value.django.configs.server.type}}.yaml"
+

@@ -1,0 +1,7 @@
+- name: restart uwsgi
+  systemd:
+    daemon_reload: yes
+    name: "{{app.value.django.user.user}}-django-uwsgi-{{app.key}}.service"
+    state: restarted
+  become: True
+  become_user: root

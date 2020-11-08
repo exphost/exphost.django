@@ -1,0 +1,18 @@
+{% set run_dir = "/run/"+app.value.django.user.user %}
+[Unit]
+Description=uWSGI {{app.key}}
+After=syslog.target
+
+[Service]
+User={{app.value.django.user.user}}
+WorkingDirectory={{app.value.django.user.home}}/django/code
+ExecStart={{app.value.django.user.home}}/django/venv/bin/uwsgi --ini {{app.value.django.user.home}}/django/code/uwsgi.ini  --socket {{run_dir}}/{{app.key}}.sock --stats={{run_dir}}/{{app.key}}_stats.sock --pidfile={{run_dir}}/{{app.key}}.pid
+RuntimeDirectory={{app.value.django.user.user}}
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

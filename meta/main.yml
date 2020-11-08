@@ -1,0 +1,29 @@
+galaxy_info:
+  role_name: django
+  author: TORGiren
+  description: Install django app
+  company: exphost
+  license: MIT
+  min_ansible_version: 2.8
+  platforms:
+    - name: el
+      versions:
+        - 7
+  galaxy_tags:
+    - fabsible
+    - django
+
+allow_duplicates: True
+
+dependencies:
+  - role: exphost.create_user
+    vars:
+      user: "{{app.value.django.user}}"
+
+  - role: exphost.download
+    vars:
+      downloads: "{{app.value.django.downloads}}"
+      notifiers:
+        - "restart {{app.value.django.configs.server.type}}"
+      user: "{{app.value.django.user}}"
+    when: app.value.django.downloads

@@ -1,0 +1,34 @@
+- block:
+  - name: install compile packages
+    yum:
+      name:
+        - gcc
+  become: True
+- block:
+  - name: install  uwsgi
+    pip:
+      virtualenv: "{{app.value.django.user.home}}/django/venv"
+      virtualenv_command: /usr/bin/python3 -m venv
+      name: uwsgi
+    vars:
+      ansible_python_interpreter: /usr/bin/python3
+
+  become: True
+  become_user: "{{app.value.django.user.user}}"
+
+- block:
+  - name: copy service file
+    template:
+      src: django_uwsgi.service
+      dest: "/etc/systemd/system/{{app.value.django.user.user}}-django-uwsgi-{{app.key}}.service"
+    notify:
+      - restart uwsgi
+  - meta: flush_handlers
+
+  - name: start app
+    systemd:
+      daemon_reload: yes
+      name: "{{app.value.django.user.user}}-django-uwsgi-{{app.key}}.service"
+      state: started
+  become: True
+  become_user: root
