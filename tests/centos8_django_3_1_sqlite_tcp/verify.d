@@ -1,0 +1,1 @@
+../.shared_sqlite_tcp/verify.d/

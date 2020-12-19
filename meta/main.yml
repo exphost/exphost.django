@@ -18,12 +18,13 @@ allow_duplicates: True
 dependencies:
   - role: exphost.create_user
     vars:
-      user: "{{app.value.django.user}}"
+      user: "{{ app.value.django.user }}"
 
   - role: exphost.download
     vars:
-      downloads: "{{app.value.django.downloads}}"
+      downloads: "{{ app.value.django.downloads }}"
       notifiers:
-        - "restart {{app.value.django.configs.server.type}}"
-      user: "{{app.value.django.user}}"
+        - "restorecon django"
+        - "restart {{ app.value.django.configs.server.type }}"
+      user: "{{ app.value.django.user }}"
     when: app.value.django.downloads

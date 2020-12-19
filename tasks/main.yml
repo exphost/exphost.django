@@ -1,32 +1,67 @@
 - debug:
     msg: "Jeste Djange"
 - block:
+
     - name: install python3
       yum:
         name:
           - python36
           - python36-devel
+
+    - name: install python3-virtualenv (centos 7)
+      yum:
+        name:
           - python36-virtualenv
+      when: ansible_distribution_major_version == "7"
+
+    - name: Add repository #TODO change it to some smarter task, move it somewhere or something
+      yum_repository:
+        name: mariadb
+        description: MariaDB
+        baseurl: "http://yum.mariadb.org/10.4/centos$releasever-amd64"
+        gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+        gpgcheck: yes
+
+    - name: install mysql and gcc #TODO move to another role and maybe add as option in group_vars
+      yum:
+        name:
+          - mariadb-devel
+          - gcc
+
+    - name: install mysql #TODO move to another role and maybe add as option in group_vars
+      yum:
+        name:
+          - MariaDB-common
+          - /usr/lib64/libmariadb.so #HACK, because MariaDB-shared install MariaDB-compat
+          #- MariaDB-shared
+      when: ansible_distribution_major_version == "7"
+
+    - name: install mysql #TODO move to another role and maybe add as option in group_vars
+      yum:
+        name:
+          - mariadb-common
+      when: ansible_distribution_major_version == "8"
+
   become: True
 - block:
   - name: install  requirements
     pip:
-      virtualenv: "{{app.value.django.user.home}}/django/venv"
+      virtualenv: "{{ app.value.django.user.home }}/django/venv"
       virtualenv_command: /usr/bin/python3 -m venv
-      requirements: "{{app.value.django.user.home}}/django/code/requirements.txt"
+      requirements: "{{ app.value.django.user.home }}/django/code/requirements.txt"
     vars:
       ansible_python_interpreter: /usr/bin/python3
     notify:
-      - restart {{app.value.django.configs.server.type}}
+      - restart {{ app.value.django.configs.server.type }}
 
   - name: django db migrate
     community.general.django_manage:
       command: migrate
-      app_path: "{{app.value.django.user.home}}/django/code"
-      virtualenv: "{{app.value.django.user.home}}/django/venv"
+      app_path: "{{ app.value.django.user.home }}/django/code"
+      virtualenv: "{{ app.value.django.user.home }}/django/venv"
 
   become: True
-  become_user: "{{app.value.django.user.user}}"
+  become_user: "{{ app.value.django.user.user }}"
 
-- include_tasks: "server_{{app.value.django.configs.server.type}}.yaml"
+- include_tasks: "server_{{ app.value.django.configs.server.type }}.yaml"
 
