@@ -1,12 +1,13 @@
+---
 - name: restorecon django
   command: "restorecon -ivr {{ app.value.django.user.home }}/django"
-  become: True
+  become: true
   become_user: root
 
 - name: restart uwsgi
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: "{{ app.value.django.user.user }}-django-uwsgi-{{ app.key }}.service"
     state: restarted
-  become: True
+  become: true
   become_user: root

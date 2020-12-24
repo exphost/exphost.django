@@ -1,7 +1,7 @@
+---
 app_defaults:
   user:
     user: "{{ app.key }}"
     group: "{{ app.key }}"
     home: "/app/{{ app.key }}"
     gid: "{{ app.value.django.user.uid }}"
-
