@@ -1,0 +1,12 @@
+test_app_engine: "sqlite"
+apps_django_uwsgi:
+  django:
+    priority: 7
+    django:
+      configs:
+        server:
+          socket:
+            type: tcp
+            ports:
+              main: 8001
+              stats: 8002

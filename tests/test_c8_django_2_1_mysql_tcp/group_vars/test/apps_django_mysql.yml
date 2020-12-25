@@ -1,0 +1,34 @@
+test_app_engine: "mysql"
+apps_django_uwsgi:
+  django:
+    priority: 7
+    django:
+      configs:
+        server:
+          socket:
+            type: tcp
+            ports:
+              main: 8003
+              stats: 8004
+
+apps_mysql:
+  my_db:
+    priority: 6
+    mysql:
+      enabled: True
+      type: exphost.mysql
+      install: standalone
+      configs:
+        port: 3306
+        pass: test_pass
+      user:
+        user: my_db
+        uid: "510"
+      content:
+        dbs:
+          mysqldb:
+        users:
+          test_app:
+            privs:
+              - "mysqldb.*:ALL"
+            pass: test_pass

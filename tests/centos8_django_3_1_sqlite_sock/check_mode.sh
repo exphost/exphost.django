@@ -1,1 +1,0 @@
-../.shared_default/check_mode.sh

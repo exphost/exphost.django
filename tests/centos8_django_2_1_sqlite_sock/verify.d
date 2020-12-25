@@ -1,1 +1,0 @@
-../.shared_sqlite_sock/verify.d/
