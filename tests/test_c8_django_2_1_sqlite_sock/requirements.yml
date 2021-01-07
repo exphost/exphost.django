@@ -9,3 +9,5 @@ roles:
     version: v1.0.2
   - name: exphost.mysql_content
     version: v0.0.2
+  - name: exphost.files_copier
+    version: v0.0.1

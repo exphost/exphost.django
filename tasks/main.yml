@@ -55,12 +55,18 @@
       notify:
         - restart {{ app.value.django.configs.server.type }}
 
+    - name: copy files
+      vars:
+        files: "{{ app.value.django.files }}"
+      include_role:
+        name: exphost.files_copier
+      when: app.value.django.files|default(False)
+
     - name: django db migrate
       community.general.django_manage:
         command: migrate
         app_path: "{{ app.value.django.user.home }}/django/code"
         virtualenv: "{{ app.value.django.user.home }}/django/venv"
-
   become: true
   become_user: "{{ app.value.django.user.user }}"
 
