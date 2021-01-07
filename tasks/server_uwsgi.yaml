@@ -13,6 +13,8 @@
         name: uwsgi
       vars:
         ansible_python_interpreter: /usr/bin/python3
+      notify:
+        - restorecon django
 
   become: true
   become_user: "{{ app.value.django.user.user }}"

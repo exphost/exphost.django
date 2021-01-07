@@ -71,6 +71,7 @@
       vars:
         ansible_python_interpreter: /usr/bin/python3
       notify:
+        - restorecon django
         - restart {{ app.value.django.configs.server.type }}
 
     - name: copy files
