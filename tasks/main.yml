@@ -43,6 +43,24 @@
           - mariadb-common
       when: ansible_distribution_major_version == "8"
 
+    - name: set fcontext
+      sefcontext:
+        target: "{{ item.target }}"
+        setype: "{{ item.setype }}"
+        state: present
+      loop:
+        - target: "{{ app.value.django.user.home }}/django(/.*)?"
+          setype: httpd_sys_rw_content_t
+        - target: "{{ app.value.django.user.home }}/django/venv/bin(/.*)?"
+          setype: httpd_exec_t
+        - target: "{{ app.value.django.user.home }}/django/venv/lib(/.*)?"
+          setype: httpd_sys_rw_content_t
+        - target: "{{ app.value.django.user.home }}/django/venv/.*\\.so"
+          setype: httpd_exec_t
+        - target: "{{ app.value.django.user.home }}/django/venv/.*\\.so\\..*"
+          setype: httpd_exec_t
+      notify:
+        - restorecon django
   become: true
 - block:
     - name: install  requirements

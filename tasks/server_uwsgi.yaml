@@ -18,23 +18,6 @@
   become_user: "{{ app.value.django.user.user }}"
 
 - block:
-    - name: set fcontext
-      sefcontext:
-        target: "{{ item.target }}"
-        setype: "{{ item.setype }}"
-        state: present
-      loop:
-        - target: "{{ app.value.django.user.home }}/django(/.*)?"
-          setype: httpd_sys_rw_content_t
-        - target: "{{ app.value.django.user.home }}/django/venv/bin(/.*)?"
-          setype: httpd_exec_t
-        - target: "{{ app.value.django.user.home }}/django/venv/lib(/.*)?"
-          setype: httpd_sys_rw_content_t
-        - target: "{{ app.value.django.user.home }}/django/venv/.*\\.so"
-          setype: httpd_exec_t
-      notify:
-        - restorecon django
-
     - name: add port to selinux
       vars:
         _server: "{{ app.value.django.configs.server }}"
