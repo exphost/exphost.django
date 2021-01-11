@@ -61,6 +61,18 @@
           setype: httpd_exec_t
       notify:
         - restorecon django
+
+    - name: create extra dirs
+      file:
+        path: "{{ _dir.value.path }}"
+        mode: "{{ _dir.value.mode }}"
+        owner: "{{ _dir.value.user | default(app.value.django.user.user) }}"
+        group: "{{ _dir.value.group| default(app.value.django.user.group) }}"
+        state: directory
+      loop: "{{ app.value.django.extra_dirs|dict2items }}"
+      loop_control:
+        loop_var: _dir
+      when: app.value.django.extra_dirs|default(False)
   become: true
 - block:
     - name: install  requirements

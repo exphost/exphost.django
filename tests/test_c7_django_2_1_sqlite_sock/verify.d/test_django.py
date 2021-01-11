@@ -13,3 +13,22 @@ def test_django_sqlite_sock(host):
     become=True,
     check=False,
   )['stdout'].split("\n")[-1] == 'Working'
+
+def test_djang_extra_dirs(host):
+    media = host.file("/srv/django/media")
+    assert media.is_directory
+    assert media.mode == 0o755
+    assert media.uid == 516
+    assert media.gid == 516
+
+    static = host.file("/srv/django/static")
+    assert static.is_directory
+    assert static.mode == 0o755
+    assert static.uid == 0
+    assert static.gid == 516
+
+    another = host.file("/srv/django/another")
+    assert another.is_directory
+    assert another.mode == 0o750
+    assert another.uid == 516
+    assert another.gid == 0

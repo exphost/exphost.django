@@ -11,3 +11,15 @@ apps_django_uwsgi:
             #ports:
             #  main: 8001
             #  stats: 8002
+      extra_dirs:
+        media:
+          path: /srv/django/media
+          mode: "0755"
+        static:
+          path: /srv/django/static
+          mode: "0755"
+          user: root
+        another:
+          path: /srv/django/another
+          mode: "0750"
+          group: root
