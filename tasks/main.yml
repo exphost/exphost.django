@@ -68,6 +68,7 @@
         mode: "{{ _dir.value.mode }}"
         owner: "{{ _dir.value.user | default(app.value.django.user.user) }}"
         group: "{{ _dir.value.group| default(app.value.django.user.group) }}"
+        setype: "{{ _dir.value.secontext | default(omit) }}"
         state: directory
       loop: "{{ app.value.django.extra_dirs|dict2items }}"
       loop_control:

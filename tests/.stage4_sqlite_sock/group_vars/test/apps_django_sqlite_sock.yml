@@ -23,3 +23,4 @@ apps_django_uwsgi:
           path: /srv/django/another
           mode: "0750"
           group: root
+          secontext: "httpd_sys_rw_content_t"

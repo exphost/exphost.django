@@ -32,3 +32,5 @@ def test_djang_extra_dirs(host):
     assert another.mode == 0o750
     assert another.uid == 516
     assert another.gid == 0
+
+    assert host.run("stat -c '%C' /srv/django/another|cut -f3 -d:").stdout.strip() == "httpd_sys_rw_content_t"
