@@ -16,6 +16,7 @@ apps_django:
             #              main: 8001
             #              stats: 8002
           module_name: test_app.wsgi:application
+        collectstatic: true
       downloads:
         - src:
             type: git

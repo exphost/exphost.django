@@ -92,7 +92,6 @@
         files: "{{ app.value.django.files }}"
         notifiers:
           - restorecon django
-
       include_role:
         name: exphost.files_copier
       when: app.value.django.files|default(False)
@@ -102,6 +101,13 @@
         command: migrate
         app_path: "{{ app.value.django.user.home }}/django/code"
         virtualenv: "{{ app.value.django.user.home }}/django/venv"
+
+    - name: django collectstatic
+      community.general.django_manage:
+        command: collectstatic
+        app_path: "{{ app.value.django.user.home }}/django/code"
+        virtualenv: "{{ app.value.django.user.home }}/django/venv"
+      when: app.value.django.configs.collectstatic | default(false)
   become: true
   become_user: "{{ app.value.django.user.user }}"
 
