@@ -90,6 +90,9 @@
     - name: copy files
       vars:
         files: "{{ app.value.django.files }}"
+        notifiers:
+          - restorecon django
+
       include_role:
         name: exphost.files_copier
       when: app.value.django.files|default(False)
