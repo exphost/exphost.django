@@ -10,6 +10,10 @@ apps_django_uwsgi:
             ports:
               main: 8003
               stats: 8004
+        databases:
+          - mysql
+        pip_packages:
+          - mysqlclient==2.0.1
 
 apps_mysql:
   my_db:

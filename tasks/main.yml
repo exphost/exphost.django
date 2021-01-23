@@ -15,33 +15,35 @@
           - python36-virtualenv
       when: ansible_distribution_major_version == "7"
 
-    - name: Add repository   # TODO change it to some smarter task, move it somewhere or something
-      yum_repository:
-        name: mariadb
-        description: MariaDB
-        baseurl: "http://yum.mariadb.org/10.4/centos$releasever-amd64"
-        gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
-        gpgcheck: true
+    - block:
+        - name: Add repository   # TODO change it to some smarter task, move it somewhere or something
+          yum_repository:
+            name: mariadb
+            description: MariaDB
+            baseurl: "http://yum.mariadb.org/10.4/centos$releasever-amd64"
+            gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+            gpgcheck: true
 
-    - name: install mysql and gcc   # TODO move to another role and maybe add as option in group_vars
-      yum:
-        name:
-          - mariadb-devel
-          - gcc
+        - name: install mysql and gcc   # TODO move to another role and maybe add as option in group_vars
+          yum:
+            name:
+              - mariadb-devel
+              - gcc
 
-    - name: install mysql   # TODO move to another role and maybe add as option in group_vars
-      yum:
-        name:
-          - MariaDB-common
-          - /usr/lib64/libmariadb.so   # HACK, because MariaDB-shared install MariaDB-compat
-          # - MariaDB-shared
-      when: ansible_distribution_major_version == "7"
+        - name: install mysql   # TODO move to another role and maybe add as option in group_vars
+          yum:
+            name:
+              - MariaDB-common
+              - /usr/lib64/libmariadb.so   # HACK, because MariaDB-shared install MariaDB-compat
+              # - MariaDB-shared
+          when: ansible_distribution_major_version == "7"
 
-    - name: install mysql   # TODO move to another role and maybe add as option in group_vars
-      yum:
-        name:
-          - mariadb-common
-      when: ansible_distribution_major_version == "8"
+        - name: install mysql   # TODO move to another role and maybe add as option in group_vars
+          yum:
+            name:
+              - mariadb-common
+          when: ansible_distribution_major_version == "8"
+      when: "'mysql' in app.value.django.configs.databases | default([])"
 
     - name: set fcontext
       sefcontext:
@@ -86,6 +88,18 @@
       notify:
         - restorecon django
         - restart {{ app.value.django.configs.server.type }}
+
+    - name: install extra packages
+      pip:
+        virtualenv: "{{ app.value.django.user.home }}/django/venv"
+        virtualenv_command: /usr/bin/python3 -m venv
+        name: "{{ app.value.django.configs.pip_packages }}"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+      notify:
+        - restorecon django
+        - restart {{ app.value.django.configs.server.type }}
+      when: app.value.django.configs.pip_packages | default(false)
 
     - name: copy files
       vars:
