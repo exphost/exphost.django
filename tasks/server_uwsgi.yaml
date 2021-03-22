@@ -44,5 +44,6 @@
         daemon_reload: true
         name: "{{ app.value.django.user.user }}-django-uwsgi-{{ app.key }}.service"
         state: started
+        enabled: true
   become: true
   become_user: root
